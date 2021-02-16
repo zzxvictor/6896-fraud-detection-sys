@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  SrcBucket:
+    Type: String
+    Default: https://eecs6895-fraud-detection-repo.s3.amazonaws.com
+
+  ProjectName:
+    Type: String
+    Default: fraud-detection
+Resources:
+
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${ProjectName}-lambda-service-role
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+
+  TransactionRequest:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${ProjectName}-approval-request
+      Runtime: python3.8
+      Code:
+        S3Bucket: !Ref SrcBucket
+        S3Key: src/approvalRequest
+      Role: !GetAtt LambdaRole.Arn
+      Handler: handler.handler

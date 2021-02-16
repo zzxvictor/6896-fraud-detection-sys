@@ -33,6 +33,28 @@ Resources:
       Runtime: python3.8
       Code:
         S3Bucket: !Ref SrcBucket
-        S3Key: src/approvalRequest/handler.py
+        S3Key: src/approvalRequest/code.zip
+      Role: !GetAtt LambdaRole.Arn
+      Handler: handler.handler
+
+  CheckResult:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${ProjectName}-check-result
+      Runtime: python3.8
+      Code:
+        S3Bucket: !Ref SrcBucket
+        S3Key: src/checkResult/code.zip
+      Role: !GetAtt LambdaRole.Arn
+      Handler: handler.handler
+
+  VerifyTransaction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${ProjectName}-verify-transaction
+      Runtime: python3.8
+      Code:
+        S3Bucket: !Ref SrcBucket
+        S3Key: src/verifyTransaction/code.zip
       Role: !GetAtt LambdaRole.Arn
       Handler: handler.handler

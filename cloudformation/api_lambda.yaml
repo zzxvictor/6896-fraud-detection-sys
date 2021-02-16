@@ -26,7 +26,7 @@ Resources:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
         - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
 
-  TransactionRequest:
+  ApprovalRequest:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: !Sub ${ProjectName}-approval-request
@@ -34,6 +34,17 @@ Resources:
       Code:
         S3Bucket: !Ref SrcBucket
         S3Key: src/approvalRequest/code.zip
+      Role: !GetAtt LambdaRole.Arn
+      Handler: handler.handler
+
+  BatchWriter:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${ProjectName}-batch-writer
+      Runtime: python3.8
+      Code:
+        S3Bucket: !Ref SrcBucket
+        S3Key: src/batchWriter/code.zip
       Role: !GetAtt LambdaRole.Arn
       Handler: handler.handler
 
@@ -45,6 +56,17 @@ Resources:
       Code:
         S3Bucket: !Ref SrcBucket
         S3Key: src/checkResult/code.zip
+      Role: !GetAtt LambdaRole.Arn
+      Handler: handler.handler
+
+  Classifier:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${ProjectName}-classifier
+      Runtime: python3.8
+      Code:
+        S3Bucket: !Ref SrcBucket
+        S3Key: src/classifier/code.zip
       Role: !GetAtt LambdaRole.Arn
       Handler: handler.handler
 

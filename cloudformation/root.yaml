@@ -1,0 +1,38 @@
+# nested stack - root
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Infrastructure As Code - Big Data Analysis
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  VPCNestedCall:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      # hardcode s3 bucket
+      TemplateURL: https://eecs6895-fraud-detection-repo.s3.amazonaws.com/cloudformation/vpc.yaml
+
+Outputs:
+  VPCStackRef:
+    Value: !Ref VPCNestedCall
+  VPCIDRef:
+    Value: !GetAtt
+      - VPCNestedCall
+      - Outputs.VPCID
+  PublicSubnetARef:
+    Value: !GetAtt
+      - VPCNestedCall
+      - Outputs.PublicSubnetA
+  PublicSubnetBRef:
+    Value: !GetAtt
+      - VPCNestedCall
+      - Outputs.PublicSubnetB
+  PrivateSubnetARef:
+    Value: !GetAtt
+      - VPCNestedCall
+      - Outputs.PrivateSubnetA
+  PrivateSubnetBRef:
+    Value: !GetAtt
+      - VPCNestedCall
+      - Outputs.PrivateSubnetB
+  SecurityGroup1IdRef:
+    Value: !GetAtt
+      - VPCNestedCall
+      - Outputs.SecurtityGroup1

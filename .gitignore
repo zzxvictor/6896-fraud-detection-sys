@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# other files to be ignored
+useful_commands.md
+.idea/

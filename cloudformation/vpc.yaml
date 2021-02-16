@@ -1,0 +1,297 @@
+# Create VPCs that is useful
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Infrastructure As Code - Big Data Analysis
+Transform: AWS::Serverless-2016-10-31
+# aws cloudformation update-stack --stack-name  cloud-6998-hw3 --template-body file://cloudFormationV2.yaml --capabilities CAPABILITY_IAM  --parameters ParameterKey=GithubToken,ParameterValue=
+Parameters:
+  EnvironmentName:
+    Description: An environment name that is prefixed to resource names
+    Default: EECS6895-VPC
+    Type: String
+  # 0.0.0.0/0 is for all traffic? need to confirm
+  SSHLocation:
+    AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+    Default: 0.0.0.0/0
+    Description: The IP address range that can be used to SSH to the EC2 instances
+    MaxLength: '18'
+    MinLength: '9'
+    Type: String
+  VpcCIDR:
+    # what is cidr in vpc: https://treyperry.com/2015/06/22/ipv4-cidr-vpc-in-a-nutshell/
+    Description: Please enter the IP range (CIDR notation) for this VPC
+    Type: String
+    # not sure what this means, need to investigate more
+    # https://www.youtube.com/watch?v=fpxDGU2KdkA  -> 9'23
+    # But briefly, I'm giving the VPC a range of over 65,000 possible
+    # private IP addresses to use, all of which will begin with "10.1".
+    # That's more than enough addresses for most use cases.
+    Default: 10.1.0.0/16
+
+
+Resources:
+  SecurityGroup1:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      # 80 is for HTTP, 22 is for SSH, 443 is for HTTPs
+      # still need to resolve inbound and outbound rules
+      # 0.0.0.0/0 means for all
+      GroupDescription: "Enable HTTP access via port 80 locked down to the load balancer + SSH access"
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          FromPort: '80'
+          IpProtocol: tcp
+          ToPort: '80'
+        - CidrIp: 0.0.0.0/0
+          FromPort: '443'
+          IpProtocol: tcp
+          ToPort: '443'
+        - CidrIp: !Ref SSHLocation
+          FromPort: '22'
+          IpProtocol: tcp
+          ToPort: '22'
+      # assign to the vpc
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - ${EnvironmentName}-SecurityGroup
+            - { EnvironmentName: !Ref EnvironmentName }
+  VPC:
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCIDR
+      # https://www.infoq.com/articles/aws-vpc-cloudformation/
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Ref EnvironmentName
+
+  # Our VPC will need internet access:
+  # Our VPC won't be able to interact with the public internet without it.
+  # you will find that it takes several seconds to create these first three
+  # resources, especially the attachment.
+  # This delay will become an issue
+  # later, we won't be able to do any interaction with the public internet
+  # until the attachment is complete.  Watch for use of "DependsOn" later to
+  # address this issue.
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    DependsOn: VPC
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Ref EnvironmentName
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    # Notice how you can't attach an IGW to a VPC unless both are created:
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      # This CIDR is a sub-range of the VPC's 10.1.0.0/16.
+      # Essentially it says this subnet will hold all addresses beginning with 10.1.10.*.
+      # It also means the subnet will only have 256 total addresses available
+      # (actually 251 because AWS reserves 5 for its own purposes)
+      CidrBlock: 10.1.10.0/24
+      # We could simply hard-code a value like "us-east-1a" but this limits our template to N. Virginia.
+      AvailabilityZone: !Select [ 0, !GetAZs ]    # Get the first AZ in the list
+      Tags:
+        - Key: Name
+          # may use ${AWS::StackName} as well
+          Value: !Sub
+            - ${EnvironmentName}-Public-A
+            - { EnvironmentName: !Ref EnvironmentName }
+
+  # The differences between these subnets are
+  # 1) the logical names
+  # 2) the physical names (via the tag values)
+  # 3) the CIDR ranges (nothing overlaps) and
+  # 4) the assigned availability zone.
+  # The result is four subnets, two are "public", two are "private",
+  # two in the "A" availability zone, two in the "B" availability zone.
+
+  PublicSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.1.20.0/24
+      AvailabilityZone: !Select [ 1, !GetAZs ]    # Get the second AZ in the list
+      Tags:
+      - Key: Name
+        Value: !Sub
+          - ${EnvironmentName}-Public-B
+          - { EnvironmentName: !Ref EnvironmentName }
+
+  PrivateSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.1.50.0/24
+      AvailabilityZone: !Select [ 0, !GetAZs ]    # Get the first AZ in the list
+      Tags:
+      - Key: Name
+        Value: !Sub
+          - ${EnvironmentName}-Private-A
+          - { EnvironmentName: !Ref EnvironmentName }
+
+  PrivateSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.1.60.0/24
+      AvailabilityZone: !Select [ 1, !GetAZs ]    # Get the second AZ in the list
+      Tags:
+      - Key: Name
+        Value: !Sub
+          - ${EnvironmentName}-Private-B
+          - { EnvironmentName: !Ref EnvironmentName }
+
+  # Adding routing table
+  # Despite their names, subnets are only "public" or "private"
+  # based on the definitions of their associated routing tables.
+  # Routing tables define where traffic can be routed to in a subnet.
+  # Some route tables for our subnets:
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - ${EnvironmentName}-Public-Route-Table
+            - { EnvironmentName: !Ref EnvironmentName }
+  PublicRoute1: # Public route table has direct routing to IGW:
+    Type: AWS::EC2::Route
+    # An error will occur if we attempt to build a route table entry to an unattached gateway
+    # During stack creation it will not attempt to build this route table entry until after the AttachGateway resource is created
+    DependsOn: AttachGateway
+    Properties:
+      # The entry is associated with the public route table (!Ref PublicRouteTable)
+      # and routes any internet-bound traffic (DestinationCidrBlock: 0.0.0.0/0)
+      # to the internet gateway (!Ref InternetGateway).
+      # What is not visible is the implicit first entry included on
+      # every route table called the "local" route, **all trafffic for 10.1.0.0/16** stays within the VPC
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      # An error will occur if we attempt to build a route table entry to an unattached gateway
+      GatewayId: !Ref InternetGateway
+
+  # Here is a private route table:
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - ${EnvironmentName}-Private-Route-Table
+            - { EnvironmentName: !Ref EnvironmentName }
+  # we do not want instances within our private subnets to be reachable from
+  # the public internet.  But we do want these instances to be able
+  # to initiate outbound connections, such as downloads.
+  PrivateRoute1: # Private route table can access web via NAT (Network Address Translation)
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      # Route traffic through the NAT Gateway:
+      # public using gateway id
+      # mostly like the public one except we won't reference the InternetGateway:
+      NatGatewayId: !Ref NATGateway
+
+  # A NAT Gateway: NATting using NAT Gateway
+  NATGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      # The NAT requires a fixed public IP Address.  This is supplied by an Elastic IP address, explained below.
+      # Another implicit function described here.  This references specific property / attribute of another resource.
+      # Using !Ref here would not work, the NAT Gateway resource needs the allocationId of the
+      # Elastic IP address, not the address itself
+      # Until now, every resource in our stack is free of charge.
+      # ** NAT Gateways are not. ** They are charged by the hour and how much traffic moves through them,
+      AllocationId: !GetAtt ElasticIPAddress.AllocationId
+      SubnetId: !Ref PublicSubnetA
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - NAT-${EnvironmentName}
+            - { EnvironmentName: !Ref EnvironmentName }
+  ElasticIPAddress:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: VPC
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - EIP-${EnvironmentName}
+            - { EnvironmentName: !Ref EnvironmentName }
+
+  # Attach the public subnets to public route tables,
+  # and attach the private subnets to private route tables:
+  PublicSubnetARouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetA
+      RouteTableId: !Ref PublicRouteTable
+  PublicSubnetBRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetB
+      RouteTableId: !Ref PublicRouteTable
+  PrivateSubnetARouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnetA
+      RouteTableId: !Ref PrivateRouteTable
+  PrivateSubnetBRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnetB
+      RouteTableId: !Ref PrivateRouteTable
+  # If you like, you can test your VPC by running EC2 instances within it.
+  # Instances with public IP addresses attached to the public subnets will be accessible
+  # from the public internet.  Instances in the private subnets will be unreachable
+  # from the public internet, but will be able to make outbound calls.
+  # I'll refer you to other articles for this.
+
+  # Remember the NAT Gateway will cost a penny or two per hour,
+  # so best to delete the stack if you won’t be using it..
+
+
+  # The optional Outputs section declares output values
+  # that you can import into other stacks (to create cross-stack references),
+  # return in response (to describe stack calls)
+Outputs:
+  VPCID:
+    Description: VPC ID of the VPC, which is in the ref
+    Value: !Ref VPC
+    # Export is used for cross stack referencing
+#    Export:
+#      # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-sub.html
+#      Name: !Sub ${AWS::StackName}-VPCID
+  PublicSubnetA:
+    Description: PublicSubnetA ID
+    Value: !Ref PublicSubnetA
+
+  PublicSubnetB:
+    Description: PublicSubnetB ID
+    Value: !Ref PublicSubnetB
+
+  PrivateSubnetA:
+    Description: PrivateSubnetA ID
+    Value: !Ref PrivateSubnetA
+
+  PrivateSubnetB:
+    Description: PrivateSubnetB ID
+    Value: !Ref PrivateSubnetB
+
+  SecurtityGroup1:
+    Description: The security **group ID** to use for public web servers
+    Value: !GetAtt SecurityGroup1.GroupId

@@ -2,12 +2,17 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: Infrastructure As Code - Big Data Analysis
 Transform: AWS::Serverless-2016-10-31
+Parameters:
+  NestedBucketLocation:
+    Description: Bucket location to put s3 buckets
+    Default: https://eecs6895-fraud-detection-repo.s3.amazonaws.com/
+    Type: String
 Resources:
   VPCNestedCall:
     Type: AWS::CloudFormation::Stack
     Properties:
       # hardcode s3 bucket
-      TemplateURL: https://eecs6895-fraud-detection-repo.s3.amazonaws.com/cloudformation/vpc.yaml
+      TemplateURL: !Sub ${NestedBucketLocation}cloudformation/vpc.yaml
 
 Outputs:
   VPCStackRef:

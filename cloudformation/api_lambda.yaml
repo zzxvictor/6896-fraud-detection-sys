@@ -42,6 +42,12 @@ Resources:
         S3Key: src/approvalRequest/code.zip
       Role: !Ref BasicLambdaRoleArn
       Handler: handler.handler
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref SecurityGroupId
+        SubnetIds:
+          - !Ref PublicSubnetA
+          - !Ref PublicSubnetB
 
   BatchWriter:
     Type: AWS::Lambda::Function

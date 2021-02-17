@@ -163,7 +163,7 @@ Resources:
       MethodResponses:
         - StatusCode: 200
           ResponseModels:
-            application/json: ''
+            application/json: 'EMPTY'
           ResponseParameters:
             method.response.header.Access-Control-Allow-Headers: false
             method.response.header.Access-Control-Allow-Methods: false
@@ -270,7 +270,7 @@ Resources:
       MethodResponses:
         - StatusCode: 200
           ResponseModels:
-            application/json: ''
+            application/json: 'EMTPY'
           ResponseParameters:
             method.response.header.Access-Control-Allow-Headers: false
             method.response.header.Access-Control-Allow-Methods: false
@@ -293,7 +293,7 @@ Resources:
               method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
             ResponseTemplates:
-              application/json: ''
+              application/json: 'EMPTY'
         Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${VerifyTransaction.Arn}/invocations
       MethodResponses:
         - StatusCode: 200

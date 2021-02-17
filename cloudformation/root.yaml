@@ -20,6 +20,7 @@ Resources:
     Properties:
       # hardcode s3 bucket
       TemplateURL: !Sub ${SrcBucketUrl}/cloudformation/vpc.yaml
+
   IamRoleStack:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -27,10 +28,13 @@ Resources:
       Parameters:
         ProjectName: !Ref ProjectName
 
-#  ApiLambdaStack:
-#    Type: AWS::CloudFormation::Stack
-#    Properties:
-#      TemplateURL: !Sub ${Description}/cloudformation/api_lambda.yaml
+  ApiLambdaStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub ${Description}/cloudformation/api_lambda.yaml
+      Parameters:
+        ProjectName: !Ref ProjectName
+        BasicLambdaRoleArn: !GetAtt IamRoleStack.Outputs.LambdaRoleArn
 
 #Outputs:
 #  VPCStackRef:

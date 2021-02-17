@@ -1,2 +1,2 @@
 def handler(event, context):
-    return "Hello World"
+    return "Hello World from approval request"

@@ -1,48 +1,55 @@
 # nested stack - root
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Infrastructure As Code - Big Data Analysis
-Transform: AWS::Serverless-2016-10-31
+Description: Fraud detection pipeline cloudformation code
 Parameters:
-  NestedBucketLocation:
+  SrcBucketUrl:
     Description: Bucket location to put s3 buckets
     Default: https://eecs6895-fraud-detection-repo.s3.amazonaws.com
     Type: String
+  SrcBucketName:
+    Type: String
+    Default: eecs6895-fraud-detection-repo
+    Description: Bucket that hosts all src files
 
 Resources:
-  VPCNestedCall:
+  VpcStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       # hardcode s3 bucket
-      TemplateURL: !Sub ${NestedBucketLocation}/cloudformation/vpc.yaml
-  ApiLambdaStack:
+      TemplateURL: !Sub ${Description}/cloudformation/vpc.yaml
+  IamRoleStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Sub ${NestedBucketLocation}/cloudformation/api_lambda.yaml
+      TemplateURL: !Sub ${Description}/cloudformation/iam_role.yaml
+#  ApiLambdaStack:
+#    Type: AWS::CloudFormation::Stack
+#    Properties:
+#      TemplateURL: !Sub ${Description}/cloudformation/api_lambda.yaml
 
 Outputs:
   VPCStackRef:
-    Value: !Ref VPCNestedCall
+    Value: !Ref VpcStack
   VPCIDRef:
     Value: !GetAtt
-      - VPCNestedCall
+      - VpcStack
       - Outputs.VPCID
   PublicSubnetARef:
     Value: !GetAtt
-      - VPCNestedCall
+      - VpcStack
       - Outputs.PublicSubnetA
   PublicSubnetBRef:
     Value: !GetAtt
-      - VPCNestedCall
+      - VpcStack
       - Outputs.PublicSubnetB
   PrivateSubnetARef:
     Value: !GetAtt
-      - VPCNestedCall
+      - VpcStack
       - Outputs.PrivateSubnetA
   PrivateSubnetBRef:
     Value: !GetAtt
-      - VPCNestedCall
+      - VpcStack
       - Outputs.PrivateSubnetB
   SecurityGroup1IdRef:
     Value: !GetAtt
-      - VPCNestedCall
+      - VpcStack
       - Outputs.SecurtityGroup1

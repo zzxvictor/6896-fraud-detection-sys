@@ -1,6 +1,22 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Parameters:
+  # from other substacks
   BasicLambdaRoleArn:
+    Type: String
+
+  SecurityGroupId:
+    Type: String
+
+  PrivateSubnetA:
+    Type: String
+
+  PrivateSubnetB:
+    Type: String
+
+  PublicSubnetA:
+    Type: String
+
+  PublicSubnetB:
     Type: String
 
   SrcBucket:
@@ -10,6 +26,8 @@ Parameters:
   ProjectName:
     Type: String
     Default: fraud-detection
+
+
 
 
 Resources:

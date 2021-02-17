@@ -59,6 +59,12 @@ Resources:
         S3Key: src/batchWriter/code.zip
       Role: !Ref BasicLambdaRoleArn
       Handler: handler.handler
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref SecurityGroupId
+        SubnetIds:
+          - !Ref PrivateSubnetA
+          - !Ref PrivateSubnetB
 
   CheckResult:
     Type: AWS::Lambda::Function
@@ -70,7 +76,13 @@ Resources:
         S3Key: src/checkResult/code.zip
       Role: !Ref BasicLambdaRoleArn
       Handler: handler.handler
-
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref SecurityGroupId
+        SubnetIds:
+          - !Ref PublicSubnetA
+          - !Ref PublicSubnetB
+          -
   Classifier:
     Type: AWS::Lambda::Function
     Properties:
@@ -81,6 +93,12 @@ Resources:
         S3Key: src/classifier/code.zip
       Role: !Ref BasicLambdaRoleArn
       Handler: handler.handler
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref SecurityGroupId
+        SubnetIds:
+          - !Ref PrivateSubnetA
+          - !Ref PrivateSubnetB
 
   VerifyTransaction:
     Type: AWS::Lambda::Function
@@ -92,3 +110,9 @@ Resources:
         S3Key: src/verifyTransaction/code.zip
       Role: !Ref BasicLambdaRoleArn
       Handler: handler.handler
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref SecurityGroupId
+        SubnetIds:
+          - !Ref PublicSubnetA
+          - !Ref PublicSubnetB

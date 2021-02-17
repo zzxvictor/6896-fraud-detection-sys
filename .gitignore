@@ -131,3 +131,4 @@ dmypy.json
 # other files to be ignored
 useful_commands.md
 .idea/
+/debug.yaml

@@ -28,3 +28,4 @@ https://stackoverflow.com/questions/56157423/cloudformation-cross-stack-vs-neste
     * https://www.identityguard.com/news/credit-card-fraud-detection
     * https://lbezone.ust.hk/pdfviewer/web/viewer.php?file=aHR0cHM6Ly9sYmV6b25lLnVzdC5oay9vYmovMS9vL2IxMDIzMjM4L2IxMDIzMjM4LnBkZg==#page=1
     * MUST READ: https://github.com/namebrandon/Sparkov/blob/master/README.md
+   * https://arxiv.org/pdf/1709.08920.pdf

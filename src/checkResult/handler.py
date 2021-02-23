@@ -1,2 +1,2 @@
 def handler(event, context):
-    return "Hello World from check result"
+    return "Hello World from check result!"

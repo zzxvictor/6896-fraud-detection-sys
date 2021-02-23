@@ -5,7 +5,7 @@ phases:
       - sh zipcode.sh
   build:
     commands:
-      - aws cloudformation package --template-file cloudformation/root_template.yaml --s3-bucket eecs6895-project-src --output-template-file root_template_built.yaml
+      - aws cloudformation package --template-file cloudformation/root_template.yaml --s3-bucket eecs6895-project-src --output-template-file root_template_built.yaml --force-upload
 artifacts:
   files:
     - "**/*"

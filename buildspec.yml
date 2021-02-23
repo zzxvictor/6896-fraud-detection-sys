@@ -1,0 +1,9 @@
+version: 0.1
+phases:
+  build:
+    commands:
+      - aws cloudformation package --template-file cloudformation/root_template.yml --s3-bucket eecs6895-project-src --output-template-file root_template_built.yml
+artifacts:
+  type: zip
+  files:
+    - root_template_built.yml

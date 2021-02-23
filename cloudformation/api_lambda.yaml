@@ -67,9 +67,7 @@ Resources:
     Properties:
       FunctionName: !Sub ${ProjectName}-check-result
       Runtime: python3.8
-      Code:
-        S3Bucket: !Ref SrcBucket
-        S3Key: src/checkResult/code.zip
+      Code: ../src/checkResult/code.zip
       Role: !Ref BasicLambdaRoleArn
       Handler: handler.handler
       VpcConfig:

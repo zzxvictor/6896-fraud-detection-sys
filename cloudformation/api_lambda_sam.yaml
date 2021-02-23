@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  # from other substacks
+  BasicLambdaRoleArn:
+    Type: String
+
+  SecurityGroupId:
+    Type: String
+
+  PrivateSubnetA:
+    Type: String
+
+  PrivateSubnetB:
+    Type: String
+
+  PublicSubnetA:
+    Type: String
+
+  PublicSubnetB:
+    Type: String
+
+  ProjectName:
+    Type: String
+    Default: fraud-detection
+
+Resources:
+  Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub search-lambda-${AWS::StackName}-${Stage}
+      Runtime: python3.8
+      Handler: index.handler
+      Timeout: 10
+      Role: !GetAtt ProjectServiceRole.Arn
+      CodeUri: ./src/lambda1
+      VpcConfig:
+        # https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html
+        SecurityGroupIds:
+          - Fn::GetAtt: [ SecurityGroup1, GroupId ]
+        SubnetIds:
+          - !Ref PrivateSubnetB

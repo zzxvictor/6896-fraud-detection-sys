@@ -37,9 +37,7 @@ Resources:
     Properties:
       FunctionName: !Sub ${ProjectName}-approval-request
       Runtime: python3.8
-      Code:
-        S3Bucket: !Ref SrcBucket
-        S3Key: src/approvalRequest/code.zip
+      Code: ../src/approvalRequest/code.zip
       Role: !Ref BasicLambdaRoleArn
       Handler: handler.handler
       VpcConfig:
@@ -54,9 +52,7 @@ Resources:
     Properties:
       FunctionName: !Sub ${ProjectName}-batch-writer
       Runtime: python3.8
-      Code:
-        S3Bucket: !Ref SrcBucket
-        S3Key: src/batchWriter/code.zip
+      Code: ../src/batchWriter/code.zip
       Role: !Ref BasicLambdaRoleArn
       Handler: handler.handler
       VpcConfig:
@@ -88,9 +84,7 @@ Resources:
     Properties:
       FunctionName: !Sub ${ProjectName}-classifier
       Runtime: python3.8
-      Code:
-        S3Bucket: !Ref SrcBucket
-        S3Key: src/classifier/code.zip
+      Code: ../src/classifier/code.zip
       Role: !Ref BasicLambdaRoleArn
       Handler: handler.handler
       VpcConfig:
@@ -105,9 +99,7 @@ Resources:
     Properties:
       FunctionName: !Sub ${ProjectName}-verify-transaction
       Runtime: python3.8
-      Code:
-        S3Bucket: !Ref SrcBucket
-        S3Key: src/verifyTransaction/code.zip
+      Code: ../src/verifyTransaction/code.zip
       Role: !Ref BasicLambdaRoleArn
       Handler: handler.handler
       VpcConfig:

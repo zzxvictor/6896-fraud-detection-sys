@@ -133,3 +133,5 @@ useful_commands.md
 .idea/
 /debug.yaml
 /root-output.yaml
+
+*.zip

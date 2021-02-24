@@ -40,7 +40,7 @@ Resources:
   DynamodbSqsStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: dynamodb_sqs.yaml
+      TemplateURL: dynamodb_redis.yaml
       Parameters:
         ProjectName: !Ref ProjectName
         VpcID: !GetAtt VpcStack.Outputs.VPCID

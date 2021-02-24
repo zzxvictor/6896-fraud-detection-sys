@@ -295,3 +295,7 @@ Outputs:
   SecurtityGroup1:
     Description: The security **group ID** to use for public web servers
     Value: !GetAtt SecurityGroup1.GroupId
+
+  PrivateRouteTableID:
+    Description: private route table ID
+    Value: !Ref PrivateRouteTable

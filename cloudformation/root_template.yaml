@@ -36,3 +36,12 @@ Resources:
         PrivateSubnetB: !GetAtt VpcStack.Outputs.PrivateSubnetB
         PublicSubnetA: !GetAtt VpcStack.Outputs.PublicSubnetA
         PublicSubnetB: !GetAtt VpcStack.Outputs.PublicSubnetB
+
+  DynamodbSqsStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: dynamodb_sqs.yaml
+      Parameters:
+        ProjectName: !Ref ProjectName
+        VpcID: !GetAtt VpcStack.Outputs.VPCID
+        RouteTableID: !GetAtt VpcStack.Outputs.PrivateRouteTableID

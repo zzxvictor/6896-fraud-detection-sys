@@ -57,7 +57,7 @@ Resources:
           - !Ref PublicSubnetB
       Layers:
         - !Ref KafkaLayer
-        -
+
   BatchWriter:
     Type: AWS::Lambda::Function
     Properties:

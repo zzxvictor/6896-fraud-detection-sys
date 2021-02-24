@@ -31,6 +31,15 @@ Parameters:
 
 
 Resources:
+  KafkaLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      CompatibleRuntimes:
+        - python3.6
+        - python3.7
+        - python3.8
+      LayerName: kafka-layer
+      Content: ../src/layers/kafka-layer.zip
 
   ApprovalRequest:
     Type: AWS::Lambda::Function
@@ -46,7 +55,9 @@ Resources:
         SubnetIds:
           - !Ref PublicSubnetA
           - !Ref PublicSubnetB
-
+      Layers:
+        - !Ref KafkaLayer
+        -
   BatchWriter:
     Type: AWS::Lambda::Function
     Properties:
@@ -61,6 +72,8 @@ Resources:
         SubnetIds:
           - !Ref PrivateSubnetA
           - !Ref PrivateSubnetB
+      Layers:
+        - !Ref KafkaLayer
 
   CheckResult:
     Type: AWS::Lambda::Function
@@ -91,6 +104,8 @@ Resources:
         SubnetIds:
           - !Ref PrivateSubnetA
           - !Ref PrivateSubnetB
+      Layers:
+        - !Ref KafkaLayer
 
   VerifyTransaction:
     Type: AWS::Lambda::Function

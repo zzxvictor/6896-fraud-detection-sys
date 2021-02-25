@@ -46,3 +46,5 @@ Resources:
         VpcID: !GetAtt VpcStack.Outputs.VPCID
         RouteTableID: !GetAtt VpcStack.Outputs.PrivateRouteTableID
         SecurityGroupID: !GetAtt VpcStack.Outputs.SecurtityGroup1
+        PrivateSubnetA: !GetAtt VpcStack.Outputs.PrivateSubnetA
+        PrivateSubnetB: !GetAtt VpcStack.Outputs.PrivateSubnetB

@@ -6,6 +6,11 @@ Parameters:
     Type: String
   SecurityGroupID:
     Type: String
+  PrivateSubnetA:
+    Type: String
+  PrivateSubnetB:
+    Type: String
+
   ProjectName:
     Type: String
     Default: fraud-detection
@@ -44,11 +49,22 @@ Resources:
       ServiceName: com.amazonaws.us-east-1.dynamodb
       VpcId: !Ref VpcID
 
+  RedisSubnetGroup:
+    Type: AWS::ElastiCache::SubnetGroup
+    Properties:
+      CacheSubnetGroupName: "redis-subnet-group"
+      SubnetIds:
+        - !Ref PrivateSubnetA
+        - !Ref PrivateSubnetB
+      Description: "subnet group for the redis cluster"
+
   RedisCluster:
     Type: AWS::ElastiCache::CacheCluster
     Properties:
+      ClusterName: "redis-cache-cluster"
       Engine: "redis"
       NumCacheNodes: 1
       CacheNodeType: "cache.t3.small" # $0.8 per day
       VpcSecurityGroupIds:
         - !Ref SecurityGroupID
+      CacheSubnetGroupName: !Ref RedisSubnetGroup

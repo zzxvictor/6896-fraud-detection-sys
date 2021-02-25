@@ -4,6 +4,8 @@ Parameters:
     Type: String
   RouteTableID:
     Type: String
+  SecurityGroupID:
+    Type: String
   ProjectName:
     Type: String
     Default: fraud-detection
@@ -41,3 +43,12 @@ Resources:
         - !Ref RouteTableID
       ServiceName: com.amazonaws.us-east-1.dynamodb
       VpcId: !Ref VpcID
+
+  RedisCluster:
+    Type: AWS::ElastiCache::CacheCluster
+    Properties:
+      Engine: "redis"
+      NumCacheNodes: 1
+      CacheNodeType: "cache.t3.small" # $0.8 per day
+      VpcSecurityGroupIds:
+        - !Ref SecurityGroupID

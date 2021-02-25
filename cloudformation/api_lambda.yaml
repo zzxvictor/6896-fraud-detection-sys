@@ -41,6 +41,16 @@ Resources:
       LayerName: kafka-layer
       Content: ../src/layers/kafka-layer.zip
 
+  RedisLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      CompatibleRuntimes:
+        - python3.6
+        - python3.7
+        - python3.8
+      LayerName: redis-layer
+      Content: ../src/layers/redis-layer.zip
+
   ApprovalRequest:
     Type: AWS::Lambda::Function
     Properties:
@@ -57,6 +67,7 @@ Resources:
           - !Ref PublicSubnetB
       Layers:
         - !Ref KafkaLayer
+        - !Ref RedisLayer
 
   BatchWriter:
     Type: AWS::Lambda::Function
@@ -89,7 +100,8 @@ Resources:
         SubnetIds:
           - !Ref PublicSubnetA
           - !Ref PublicSubnetB
-
+      Layers:
+        - !Ref RedisLayer
   Classifier:
     Type: AWS::Lambda::Function
     Properties:
@@ -121,7 +133,8 @@ Resources:
         SubnetIds:
           - !Ref PublicSubnetA
           - !Ref PublicSubnetB
-
+      Layers:
+        - !Ref RedisLayer
 
   # API gateway definition
   ApiGateway:

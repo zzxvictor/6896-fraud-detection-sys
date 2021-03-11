@@ -6,6 +6,11 @@ from sklearn.ensemble import IsolationForest
 import json
 
 
+"""
+https://booklet.ai/blog/aws-sagemaker-pytorch-local-dev-flow/
+https://sagemaker.readthedocs.io/en/stable/overview.html#local-mode
+"""
+
 def model_fn(model_dir):
     clf = joblib.load(os.path.join(model_dir, "model.joblib"))
     return clf

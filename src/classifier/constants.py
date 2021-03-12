@@ -6,4 +6,4 @@ BOOTSTRAP_SERVERS = ["b-2.6895-kafka.fo3vvt.c14.kafka.us-east-1.amazonaws.com:90
 
 BootstrapBrokerStringTls = "b-2.6895-kafka.fo3vvt.c14.kafka.us-east-1.amazonaws.com:9094,b-1.6895-kafka.fo3vvt.c14.kafka.us-east-1.amazonaws.com:9094"
 
-REQUEST_TOPIC = "Request"
+APPROVE_TOPIC = "Approve"

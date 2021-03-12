@@ -1,2 +1,10 @@
+import json
+import base64
+import datetime
+import boto3
 def handler(event, context):
-    return "Hello World from check result !!!"
+    print(event)
+    return {
+        'statusCode': 200,
+        'body': json.dumps("Hello World from batch writer !!!")
+    }

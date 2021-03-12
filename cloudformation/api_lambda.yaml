@@ -51,6 +51,16 @@ Resources:
       LayerName: redis-layer
       Content: ../src/layers/redis-layer.zip
 
+  ConstantLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      CompatibleRuntimes:
+        - python3.6
+        - python3.7
+        - python3.8
+      LayerName: fraud-detection-constant-layer
+      Content: ../src/constants/constant-layer.zip
+
   ApprovalRequest:
     Type: AWS::Lambda::Function
     Properties:

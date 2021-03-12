@@ -51,6 +51,16 @@ Resources:
       LayerName: redis-layer
       Content: ../src/layers/redis-layer.zip
 
+  ConstantLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      CompatibleRuntimes:
+        - python3.6
+        - python3.7
+        - python3.8
+      LayerName: fraud-detection-constant-layer
+      Content: ../src/constants/constant-layer.zip
+
   ApprovalRequest:
     Type: AWS::Lambda::Function
     Properties:
@@ -68,6 +78,7 @@ Resources:
       Layers:
         - !Ref KafkaLayer
         - !Ref RedisLayer
+        - !Ref ConstantLayer
 
   BatchWriter:
     Type: AWS::Lambda::Function
@@ -85,6 +96,7 @@ Resources:
           - !Ref PrivateSubnetB
       Layers:
         - !Ref KafkaLayer
+        - !Ref ConstantLayer
 
   CheckResult:
     Type: AWS::Lambda::Function
@@ -102,6 +114,8 @@ Resources:
           - !Ref PublicSubnetB
       Layers:
         - !Ref RedisLayer
+        - !Ref ConstantLayer
+
   Classifier:
     Type: AWS::Lambda::Function
     Properties:
@@ -118,6 +132,7 @@ Resources:
           - !Ref PrivateSubnetB
       Layers:
         - !Ref KafkaLayer
+        - !Ref ConstantLayer
 
   VerifyTransaction:
     Type: AWS::Lambda::Function
@@ -135,6 +150,7 @@ Resources:
           - !Ref PublicSubnetB
       Layers:
         - !Ref RedisLayer
+        - !Ref ConstantLayer
 
   # API gateway definition
   ApiGateway:

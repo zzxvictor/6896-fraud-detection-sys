@@ -134,7 +134,6 @@ useful_commands.md
 /debug.yaml
 /root-output.yaml
 
-code.zip
 
 # MAC related
 .DS_Store
@@ -142,3 +141,5 @@ code.zip
 
 # cred files
 creds/
+constant-layer.zip
+code.zip

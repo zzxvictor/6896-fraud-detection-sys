@@ -7,7 +7,7 @@ import boto3
 import redis
 
 redis_client = redis.Redis(host=REDIS_SERVER, port=REDIS_SERVER_PORT, ssl=None)
-
+kafka_producer = KafkaProducer(bootstrap_servers=BOOTSTRAP_SERVERS)
 
 def publish_kafka_topics(producer, topic_name, data):
     print('publish to {} topic'.format(topic_name))
@@ -24,7 +24,6 @@ def handler(event, context):
     """
     # print(json.dumps(event))
     msgs = event['records'].values()
-    producer = KafkaProducer(bootstrap_servers=BOOTSTRAP_SERVERS)
 
     # print("dealing with the kafka requests...")
     for lst in msgs:
@@ -35,8 +34,7 @@ def handler(event, context):
             # this is dummy
             if int(information["is_fraud"]) == 0:
                 # approve transaction and put to another topic called Approve
-                publish_kafka_topics(producer, APPROVE_TOPIC, json.dumps(information))
-
+                publish_kafka_topics(kafka_producer, APPROVE_TOPIC, json.dumps(information))
             else:
                 print("It is likely to be fraud!")
             # append_transaction_details(information)

@@ -153,6 +153,17 @@ Resources:
         - !Ref RedisLayer
         - !Ref ConstantLayer
 
+  SageMakerDeployment:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${ProjectName}-sagemaker-deployment
+      Runtime: python3.8
+      Code: ../src/sagemaker/code.zip
+      Role: !Ref BasicLambdaRoleArn
+      Handler: handler.handler
+      Layers:
+        - !Ref ConstantLayer
+
   # API gateway definition
   ApiGateway:
     Type: AWS::ApiGateway::RestApi

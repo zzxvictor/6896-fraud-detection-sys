@@ -69,7 +69,7 @@ Resources:
         - python3.7
         - python3.8
       LayerName: sagemaker-layer
-      Content: ../src/layers/sagemaker-layer.zip
+      Content: ../src/layers/aws-sagemaker-layer.zip
 
   ApprovalRequest:
     Type: AWS::Lambda::Function

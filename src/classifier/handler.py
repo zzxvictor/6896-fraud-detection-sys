@@ -5,12 +5,14 @@ from constants import CLUSTER_ARN, APPROVE_TOPIC, ZOOKEEPER, BOOTSTRAP_SERVERS, 
 import datetime
 import boto3
 
+
 def publish_kafka_topics(producer, topic_name, data):
     print('publish to {} topic'.format(topic_name))
     producer.send(topic=topic_name, value=str.encode(data))
     producer.flush()
     print("finished publishing to {} topic".format(topic_name))
-    
+
+
 def handler(event, context):
     """
     right now it is a stupid classifier

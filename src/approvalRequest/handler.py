@@ -27,11 +27,13 @@ def verify_user(username, location):
     print("user verified")
     return True
 
+
 def publish_kafka_topics(producer, topic_name, data):
     print('publish to {} topic'.format(topic_name))
     producer.send(topic=topic_name, value=str.encode(data))
     producer.flush()
     print("finished publishing to {} topic".format(topic_name))
+
 
 def parse_request(header, request) ->dict:
     """
@@ -51,6 +53,7 @@ def parse_request(header, request) ->dict:
     for key, value in zip(headers, requests):
         ret[key] = value
     return ret
+
 
 def handler(event, context):
     print(json.dumps(event))

@@ -133,6 +133,7 @@ Resources:
       Layers:
         - !Ref KafkaLayer
         - !Ref ConstantLayer
+        - !Ref RedisLayer
 
   VerifyTransaction:
     Type: AWS::Lambda::Function

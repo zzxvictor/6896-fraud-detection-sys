@@ -15,3 +15,7 @@ BootstrapBrokerStringTls = "b-2.6895-kafka.fo3vvt.c14.kafka.us-east-1.amazonaws.
 APPROVE_TOPIC = "Approve"
 
 REQUEST_TOPIC = "Request"
+
+REDIS_SERVER = "redis-cache-cluster.xxhve4.0001.use1.cache.amazonaws.com"
+
+REDIS_SERVER_PORT = 6379

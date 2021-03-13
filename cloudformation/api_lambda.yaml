@@ -61,6 +61,16 @@ Resources:
       LayerName: fraud-detection-constant-layer
       Content: ../src/constants/constant-layer.zip
 
+  SagemakerLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      CompatibleRuntimes:
+        - python3.6
+        - python3.7
+        - python3.8
+      LayerName: sagemaker-layer
+      Content: ../src/layers/sagemaker-layer.zip
+
   ApprovalRequest:
     Type: AWS::Lambda::Function
     Properties:
@@ -163,6 +173,7 @@ Resources:
       Handler: handler.handler
       Layers:
         - !Ref ConstantLayer
+        - !Ref SagemakerLayer
 
   # API gateway definition
   ApiGateway:

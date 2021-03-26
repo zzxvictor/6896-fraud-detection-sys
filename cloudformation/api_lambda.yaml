@@ -262,7 +262,7 @@ Resources:
       RestApiId: !Ref ApiGateway
       AuthorizationType: NONE
       Integration:
-        Type: AWS
+        Type: AWS_PROXY
         IntegrationHttpMethod: POST
         IntegrationResponses:
           - StatusCode: 200

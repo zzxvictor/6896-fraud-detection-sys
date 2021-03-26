@@ -1,0 +1,129 @@
+<!-- templates/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="https://code.jquery.com/jquery-2.1.4.js" type="text/javascript"></script>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="lib/axios/dist/axios.standalone.js" type="text/javascript"></script>
+    <script src="lib/CryptoJS/rollups/hmac-sha256.js" type="text/javascript"></script>
+    <script src="lib/CryptoJS/rollups/sha256.js" type="text/javascript"></script>
+    <script src="lib/CryptoJS/components/hmac.js" type="text/javascript"></script>
+    <script src="lib/CryptoJS/components/enc-base64.js" type="text/javascript"></script>
+    <script src="lib/url-template/url-template.js" type="text/javascript"></script>
+    <script src="lib/apiGatewayCore/sigV4Client.js" type="text/javascript"></script>
+    <script src="lib/apiGatewayCore/apiGatewayClient.js" type="text/javascript"></script>
+    <script src="lib/apiGatewayCore/simpleHttpClient.js" type="text/javascript"></script>
+    <script src="lib/apiGatewayCore/utils.js" type="text/javascript"></script>
+    <script src="apigClient.js" type="text/javascript"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.283.1.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="static/css/style.css" rel="stylesheet">
+    <script>
+        function verify() {
+            const queryString = window.location.search;
+            console.log(queryString);
+            const urlParams = new URLSearchParams(queryString);
+            console.log(urlParams);
+            if (!urlParams.has('user_id')){
+                alert("No user_id presented!");
+                return;
+            }
+            
+            if(!urlParams.has('transaction_id')){
+                alert("No transaction_id presented!");
+                return;
+            }
+            user_id = urlParams.get('user_id');
+            transaction_id = urlParams.get('transaction_id');
+
+
+            var apigClient = apigClientFactory.newClient();
+            var params = {
+                //This is where any header, path, or querystring request params go. The key is the parameter named as defined in the API
+            };
+            // const queryString = window.location.search;
+            // console.log(queryString);
+            // const urlParams = new URLSearchParams(queryString);
+            var body = {
+                //This is where you define the body of the request
+                "user_id": user_id,
+                "transaction_id": transaction_id
+            };
+            var additionalParams = {}
+            
+            apigClient.confirmPost(params, body, additionalParams)
+                .then(function (result) {
+                    console.log(result.data);
+                    console.log(result.data.statusCode);
+                    statusCode = result.data.statusCode;
+                    message = JSON.parse(result.data.body);
+                    document.getElementById("response").innerHTML = message;
+                    // if (Math.floor(statusCode/100) == 2){
+                    //     document.getElementById("response").innerHTML = "Your transaction is approved!";
+                    // } else if (Math.floor(statusCode/100) == 4) {
+                    //     document.getElementById("response").innerHTML = "There is an error while verifying your transaction. Please make sure you are using the correct URL";
+                    // } else {
+                    //     document.getElementById("response").innerHTML = "Unknown Error, please try again!";
+                    // }
+                    // var json = JSON.parse(result.data.body)
+                    // console.log(json.message)
+                    // //alert(json.message);
+                    // document.getElementById("response").innerHTML = json.message;
+                    // if (json.access){
+                    //     document.getElementById("access").innerHTML = '<img class="small_img" src="static/images/yes.png" alt="Access Approved"><br>';
+                    // } else {
+                    //     document.getElementById("access").innerHTML = '<img class="small_img" src="static/images/no.png" alt="Access Denied"><br>';
+                    // }
+                    // document.getElementById("response").innerHTML = "Your transaction is received. If there is further issue, we will remind you";
+                    // document.getElementById("access").innerHTML = '<img class="small_img" src="static/images/yes.png" alt="Access Approved"><br>';
+                    
+                    
+                }).catch(function (result) {
+                //This is where you would put an error callback
+                console.log(result);
+            });
+
+            // if (transaction == ""){
+            //     alert("You need to enter a piece of transaction information");
+            // } else {
+            //     apigClient.requestPost(params, body, additionalParams)
+            //         .then(function (result) {
+            //             // console.log(result.data)
+            //             // var json = JSON.parse(result.data.body)
+            //             // console.log(json.message)
+            //             // //alert(json.message);
+            //             // document.getElementById("response").innerHTML = json.message;
+            //             // if (json.access){
+            //             //     document.getElementById("access").innerHTML = '<img class="small_img" src="static/images/yes.png" alt="Access Approved"><br>';
+            //             // } else {
+            //             //     document.getElementById("access").innerHTML = '<img class="small_img" src="static/images/no.png" alt="Access Denied"><br>';
+            //             // }
+            //             document.getElementById("response").innerHTML = "Your transaction is received. If there is further issue, we will remind you";
+            //             // document.getElementById("access").innerHTML = '<img class="small_img" src="static/images/yes.png" alt="Access Approved"><br>';
+                        
+            //         }).catch(function (result) {
+            //         //This is where you would put an error callback
+            //         console.log(result);
+            //     });                
+            // }
+            
+        };
+    </script>
+</head>
+<body>
+    <div class='div-center'>
+        <h2 align="center">Transaction</h2>
+        
+        <img class="small_img" src="static/images/yes.png" alt="Verify Your Transaction"><br>
+        Verify Your Transaction:<br>
+        <button id="correct" onclick="verify()">Verify</button>
+        <p id="response"></p>
+    </div>
+    
+</body>
+
+</html>

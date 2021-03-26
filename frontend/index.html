@@ -55,6 +55,10 @@
                         // }
                         document.getElementById("response").innerHTML = "Your transaction is received. If there is further issue, we will remind you";
                         // document.getElementById("access").innerHTML = '<img class="small_img" src="static/images/yes.png" alt="Access Approved"><br>';
+                        document.getElementById("check_result").innerHTML = "";
+                        document.getElementById("result_image").innerHTML = '<img class="small_img" src="static/images/pending.gif" alt="Pending"><br>';
+
+                        PeriodCheck = setInterval(check_result2, 1000);
                         
                     }).catch(function (result) {
                     //This is where you would put an error callback
@@ -62,22 +66,26 @@
                 });                
             }
         };
-
-        function check_result() {
+        function check_result2() {
+            
             var apigClient = apigClientFactory.newClient();
             var params = {
                 //This is where any header, path, or querystring request params go. The key is the parameter named as defined in the API
             };
             var body = {
                 //This is where you define the body of the request
-                'transaction': transaction
+                // 'transaction': transaction
             };
-
-            user_id = document.getElementById("user_id").value;
-            transaction_id = document.getElementById("transaction_id").value;
+            transaction = document.getElementById("transaction").value;
+            trans_arr = transaction.split("|");
+            user_id = trans_arr[0];
+            transaction_id = trans_arr[1];
             var additionalParams = {
-                "user_id": user_id,
-                "transaction_id": transaction_id
+                queryParams: {
+                    "user_id": user_id,
+                    "transaction_id": transaction_id
+                }
+                
             };
 
             if (user_id == ""){
@@ -91,10 +99,75 @@
 
             apigClient.requestGet(params, body, additionalParams)
                     .then(function (result) {
-                        console.log(result.data)
-                        var json = JSON.parse(result.data.body)
-                        var status = result.data.statusCode
-                        document.getElementById("check_result").innerHTML = json;
+                        console.log(result);
+                        // var json = JSON.parse(result.data.body)
+                        // console.log(json)
+                        var status = result.status
+                        document.getElementById("check_result").innerHTML = result.data;
+                        if (status === 200){
+                            document.getElementById("result_image").innerHTML = '<img class="small_img" src="static/images/yes.png" alt="Approved"><br>';
+                            clearInterval(PeriodCheck);
+                        } else if (status === 208) {
+                            document.getElementById("result_image").innerHTML = '<img class="small_img" src="static/images/pending.gif" alt="Pending"><br>';
+                        }
+                        // console.log(json.message)
+                        // //alert(json.message);
+                        // document.getElementById("response").innerHTML = json.message;
+                        // if (json.access){
+                        //     document.getElementById("access").innerHTML = '<img class="small_img" src="static/images/yes.png" alt="Access Approved"><br>';
+                        // } else {
+                        //     document.getElementById("access").innerHTML = '<img class="small_img" src="static/images/no.png" alt="Access Denied"><br>';
+                        // }
+                        // document.getElementById("response").innerHTML = "Your transaction is received. If there is further issue, we will remind you";
+                        // document.getElementById("access").innerHTML = '<img class="small_img" src="static/images/yes.png" alt="Access Approved"><br>';
+                        
+                    }).catch(function (result) {
+                    //This is where you would put an error callback
+                    console.log(result);
+                    document.getElementById("result_image").innerHTML = '<img class="small_img" src="static/images/no.png" alt="Access Denied"><br>';
+                    document.getElementById("check_result").innerHTML = result.data;
+                    clearInterval(PeriodCheck);
+                });  
+
+        };
+
+        function check_result() {
+            clearInterval(PeriodCheck);
+            var apigClient = apigClientFactory.newClient();
+            var params = {
+                //This is where any header, path, or querystring request params go. The key is the parameter named as defined in the API
+            };
+            var body = {
+                //This is where you define the body of the request
+                'transaction': transaction
+            };
+
+            user_id = document.getElementById("user_id").value;
+            transaction_id = document.getElementById("transaction_id").value;
+            var additionalParams = {
+                queryParams: {
+                    "user_id": user_id,
+                    "transaction_id": transaction_id
+                }
+                
+            };
+
+            if (user_id == ""){
+                alert("You need to enter user id in order to check the result!");
+                return;
+            }
+            if (transaction_id == ""){
+                alert("You need to enter transaction id in order to check the result!");
+                return;
+            }
+
+            apigClient.requestGet(params, body, additionalParams)
+                    .then(function (result) {
+                        console.log(result);
+                        // var json = JSON.parse(result.data.body)
+                        // console.log(json)
+                        var status = result.status
+                        document.getElementById("check_result").innerHTML = result.data;
                         if (status === 200){
                             document.getElementById("result_image").innerHTML = '<img class="small_img" src="static/images/yes.png" alt="Approved"><br>';
                         } else {
@@ -114,6 +187,8 @@
                     }).catch(function (result) {
                     //This is where you would put an error callback
                     console.log(result);
+                    document.getElementById("result_image").innerHTML = '<img class="small_img" src="static/images/no.png" alt="Access Denied"><br>';
+                    document.getElementById("check_result").innerHTML = result.data;
                 });  
 
         };
@@ -142,15 +217,16 @@
         <!-- <button id="user-input-button-3">SUBMIT</button> -->
         <br></br>
 
-        <h4 align="center">Check Result</h4>
-        User ID: <input id="user_id" type="text">
+        <h4 align="center">Your Transanction Status</h4>
+        <!-- User ID: <input id="user_id" type="text">
         <br></br>
         Transaction ID: <input id="transaction_id" type="text">
         <br><br>
-        <button id="user-verify-button" onclick="check_result()">Check</button>
+        <button id="user-verify-button" onclick="check_result()">Check</button> -->
         <p id="check_result"></p>
         <div id="result_image">
         </div>
+        <button id="user-verify-button" onclick="check_result2()">Recheck</button>
     </div>
     
 </body>

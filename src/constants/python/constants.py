@@ -19,3 +19,5 @@ REQUEST_TOPIC = "Request"
 REDIS_SERVER = "redis-cache-cluster.xxhve4.0001.use1.cache.amazonaws.com"
 
 REDIS_SERVER_PORT = 6379
+
+SAGEMAKER_ENDPOINT = "6895-sagemaker-scikit-learn"

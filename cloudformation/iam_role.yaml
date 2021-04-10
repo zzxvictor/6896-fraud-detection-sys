@@ -23,6 +23,7 @@ Resources:
           - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
           - arn:aws:iam::aws:policy/AmazonElastiCacheFullAccess
           - arn:aws:iam::aws:policy/AmazonMSKFullAccess
+          - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
 
 Outputs:
   LambdaRoleArn:

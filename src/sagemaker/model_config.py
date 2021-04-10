@@ -21,7 +21,7 @@ def input_fn(request_body, request_content_type):
         data = json.loads(request_body)
         test_data = np.array(data['test'])
         train_data = np.array(data['train'])
-        return [train_data, test_data]
+        return [test_data, train_data]
     else:
         pass
 
@@ -29,13 +29,14 @@ def input_fn(request_body, request_content_type):
 def predict_fn(input_data, model):
     full_data = np.concatenate(input_data, axis=0)
     label = model.fit_predict(full_data)
-    print(label[0])
-
-    return 1
+    # print(label[0])
+    target = int(label[0])
+    return target
 
 
 def output_fn(prediction, content_type):
-    return json.dumps({'result': 1})
+
+    return json.dumps({'result': prediction})
 
 
 if __name__ == '__main__':

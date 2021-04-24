@@ -260,7 +260,7 @@ Resources:
     Properties:
       SubnetId: !Ref PrivateSubnetB
       RouteTableId: !Ref PrivateRouteTable
-  # If you like, you can test your VPC by running EC2 instances within it.
+  # If you like, you can input your VPC by running EC2 instances within it.
   # Instances with public IP addresses attached to the public subnets will be accessible
   # from the public internet.  Instances in the private subnets will be unreachable
   # from the public internet, but will be able to make outbound calls.

@@ -9,7 +9,7 @@ from sagemaker.local import LocalSession, LocalSagemakerRuntimeClient
 
 
 if __name__ == '__main__':
-    data = {'test': (np.random.randn(1, 10)).tolist(),
+    data = {'input': (np.random.randn(1, 10)).tolist(),
             'train': np.random.randn(200, 10).tolist()}
     response = LocalSagemakerRuntimeClient().invoke_endpoint(EndpointName="local",
                                                              ContentType='application/json',

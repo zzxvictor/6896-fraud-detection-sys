@@ -15,11 +15,15 @@ def handler(event, context):
             print(information)
             item = {}
             # use SSN as user's SSN for now
-            item[PARTITION_KEY] = information["ssn"]
-            item[SORT_KEY] = information["trans_num"]
-            item["detail"] = json.dumps(information)
-            table.put_item(Item=item)
-            print("put record to dynamoDB")
+            try:
+                item[PARTITION_KEY] = information["ssn"]
+                item[SORT_KEY] = information["trans_num"]
+                item["raw_records"] = json.dumps(information)
+                table.put_item(Item=item)
+                print("put record to dynamoDB")
+            except Exception as e:
+                print(str(e))
+                continue
     return {
         'statusCode': 200,
         'body': json.dumps("Hello World from batch writer !!!")

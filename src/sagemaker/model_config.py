@@ -19,7 +19,7 @@ def model_fn(model_dir):
 def input_fn(request_body, request_content_type):
     if request_content_type == 'application/json':
         data = json.loads(request_body)
-        test_data = np.array(data['test'])
+        test_data = np.array(data['input'])
         train_data = np.array(data['train'])
         return [test_data, train_data]
     else:

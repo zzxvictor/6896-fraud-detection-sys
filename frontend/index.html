@@ -4,6 +4,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title></title>
     <script src="https://code.jquery.com/jquery-2.1.4.js" type="text/javascript"></script>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
@@ -18,10 +20,12 @@
     <script src="lib/apiGatewayCore/apiGatewayClient.js" type="text/javascript"></script>
     <script src="lib/apiGatewayCore/simpleHttpClient.js" type="text/javascript"></script>
     <script src="lib/apiGatewayCore/utils.js" type="text/javascript"></script>
-    <script src="apigClient.js" type="text/javascript"></script>
+    <script src="static/js/apigClient.js" type="text/javascript"></script>
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.283.1.min.js"></script>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="static/css/style.css" rel="stylesheet">
+    <script src="static/js/chart.js"></script>
+
     <script>
         function my_submit() {
             var apigClient = apigClientFactory.newClient();
@@ -35,7 +39,8 @@
             console.log(transaction);
             var body = {
                 //This is where you define the body of the request
-                'transaction': transaction
+                'transaction': transaction,
+                'headers': "ssn|cc_num|gender|lat|long|city_pop|acct_num|trans_num|trans_time|amt|is_fraud|merch_lat|merch_long|age|distance|entertainment|food_dining|gas_transport|grocery_pos|health_fitness|home|kids_pets|misc_net|misc_pos|shopping_net|shopping_pos|travel|PA"
             };
             var additionalParams = {}
             if (transaction == ""){
@@ -70,14 +75,19 @@
             };
             var body = {
                 //This is where you define the body of the request
-                'transaction': transaction
+                // 'transaction': transaction
             };
 
             user_id = document.getElementById("user_id").value;
             transaction_id = document.getElementById("transaction_id").value;
             var additionalParams = {
-                "user_id": user_id,
-                "transaction_id": transaction_id
+                headers: {
+                    'Content-Type':"application/json"
+                },
+                queryParams: {
+                    "user_id": user_id,
+                    "transaction_id": transaction_id
+                }
             };
 
             if (user_id == ""){
@@ -91,11 +101,14 @@
 
             apigClient.requestGet(params, body, additionalParams)
                     .then(function (result) {
-                        console.log(result.data)
-                        var json = JSON.parse(result.data.body)
-                        var status = result.data.statusCode
-                        document.getElementById("check_result").innerHTML = json;
-                        if (status === 200){
+                        console.log(result);
+                        console.log(result.data);
+                        //console.log(result.data)
+                       // var json = JSON.parse(result.data);
+                        //var status = result.data.statusCode
+                        //document.getElementById("check_result").innerHTML = json;
+                        var genuine = parseInt(result.data.genuine);
+                        if (genuine === 1){
                             document.getElementById("result_image").innerHTML = '<img class="small_img" src="static/images/yes.png" alt="Approved"><br>';
                         } else {
                             document.getElementById("result_image").innerHTML = '<img class="small_img" src="static/images/no.png" alt="Access Denied"><br>';
@@ -117,9 +130,50 @@
                 });  
 
         };
+
+        function genuine(){
+            sample_genuine_data = "045-74-5650|3573869538621003|0|39.8417|-77.5537|1917|355104838454|e8432e6b0f236e1a778238f78a29a28e|19|73.07|0|40.389649|-77.677457|72|61.90055461035776|1|0|0|0|0|0|0|0|0|0|0|0|1";
+            document.getElementById("transaction").value = sample_genuine_data;
+        }
+
+        function fraud(){
+            sample_fraud_data = "045-74-5650|3573869538621003|0|11339.8417|77.5537|1917|355104838454|e9a3fc12827e57b880bc56b94460f87e|23|111972.41|1|40.02795|0|7222|3777.51527372701502|0|0|0|0|0|0|0|1|0|1|0|0|1";
+            document.getElementById("transaction").value = sample_fraud_data;
+        }   
+        
+        function cancel_input(){
+            document.getElementById("transaction").value = "";
+        }
+
+        function genuine_check(){
+            document.getElementById("user_id").value = "045-74-5650";
+            document.getElementById("transaction_id").value = "e8432e6b0f236e1a778238f78a29a28e";
+        }
+
+        function fraud_check(){
+            document.getElementById("user_id").value = "045-74-5650";
+            document.getElementById("transaction_id").value = "e9a3fc12827e57b880bc56b94460f87e";
+        }
+
+        function cancel_check(){
+            document.getElementById("user_id").value = "";
+            document.getElementById("transaction_id").value = "";
+        }
+
+
     </script>
 </head>
 <body>
+    <div class="topnav" id="myTopnav">
+        <a href="index.html" class="active">Home</a>
+        <a href="chart.html">Test</a>
+        <!-- <a href="#contact">Contact</a> -->
+        <a href="about.html">About</a>
+        <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+          <i class="fa fa-bars"></i>
+        </a>
+      </div>
+
     <div class='div-center'>
         <h2 align="center">Transaction</h2>
         
@@ -127,17 +181,22 @@
         Input Your Transaction Information:<br>
         <input id="transaction" type="text">
         <br><br>
+        <button id="genuine_input"  onclick="genuine()">Genuine</button>
+        <button id="fraud_input"  onclick="fraud()">Fraud</button>
+        <button id="cancel_input"  onclick="cancel()">Cancel</button>
+        <br><br>
         <button id="user-input-button" onclick="my_submit()">SUBMIT</button>
         <p id="response"></p>
         
-        <h4 align="center">Sample Genuine Transactions:</h4>
-        <h5 align="center" id="genuine">045-74-5650|3573869538621003|Vickie|Walker|F|161 Moyer Locks|Mont Alto|PA|17237|39.8417|-77.5537|1917|Press sub|1948-10-25|355104838454|adults_50up_female_rural.json|e8432e6b0f236e1a778238f78a29a28e|2013-05-26|19:58:38|1369598318|entertainment|73.07|0|fraud_Turcotte, McKenzie and Koss|40.389649|-77.677457</h5>
+        <!-- <h4 align="center">Sample Genuine Transactions:</h4>
+        <h5 align="center" id="genuine">045-74-5650|3573869538621003|Vickie|Walker|F|161 Moyer Locks|Mont Alto|PA|17237|39.8417|-77.5537|1917|Press sub|1948-10-25|355104838454|adults_50up_female_rural.json|e8432e6b0f236e1a778238f78a29a28e|2013-05-26|19:58:38|1369598318|entertainment|73.07|0|fraud_Turcotte, McKenzie and Koss|40.389649|-77.677457</h5> -->
+
         <!-- <button id="user-input-button-2">SUBMIT</button> -->
 
         <br></br>
 
-        <h4 align="center">Sample Fraud Transactions:</h4>
-        <h5 align="center" id="fraud">045-74-5650|3573869538621003|Vickie|Walker|F|161 Moyer Locks|Mont Alto|PA|17237|39.8417|-77.5537|1917|Press sub|1948-10-25|355104838454|adults_50up_female_rural.json|857d4af9c18e39c7b0961db6f58cfb07|2013-09-20|22:08:45|1379714925|misc_pos|50.80|1|fraud_Reynolds-Schinner|40.754953|-77.233002</h5>
+        <!-- <h4 align="center">Sample Fraud Transactions:</h4>
+        <h5 align="center" id="fraud">045-74-5650|3573869538621003|Vickie|Walker|F|161 Moyer Locks|Mont Alto|PA|17237|39.8417|-77.5537|1917|Press sub|1948-10-25|355104838454|adults_50up_female_rural.json|857d4af9c18e39c7b0961db6f58cfb07|2013-09-20|22:08:45|1379714925|misc_pos|50.80|1|fraud_Reynolds-Schinner|40.754953|-77.233002</h5> -->
 
         <!-- <button id="user-input-button-3">SUBMIT</button> -->
         <br></br>
@@ -146,6 +205,12 @@
         User ID: <input id="user_id" type="text">
         <br></br>
         Transaction ID: <input id="transaction_id" type="text">
+        <br><br>
+
+        <button id="genuine_check"  onclick="genuine_check()">Genuine</button>
+        <button id="fraud_check"  onclick="fraud_check()">Fraud</button>
+        <button id="cancel_check"  onclick="cancel_check()">Cancel</button>
+
         <br><br>
         <button id="user-verify-button" onclick="check_result()">Check</button>
         <p id="check_result"></p>

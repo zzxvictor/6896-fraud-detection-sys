@@ -121,7 +121,8 @@ apigClientFactory.newClient = function (config) {
     
     apigClient.requestGet = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
-        
+        console.log("APIGATEWAY!!!!!!");
+        console.log(additionalParams);
         apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
         
         var requestGetRequest = {

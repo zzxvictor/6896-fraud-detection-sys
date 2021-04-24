@@ -36,7 +36,7 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
+# Unit input / coverage reports
 htmlcov/
 .tox/
 .nox/
@@ -142,3 +142,6 @@ useful_commands.md
 creds/
 constant-layer.zip
 code.zip
+
+# data
+data/

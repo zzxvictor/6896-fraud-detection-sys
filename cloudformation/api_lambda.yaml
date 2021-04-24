@@ -31,15 +31,52 @@ Parameters:
 
 
 Resources:
+  KafkaLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      CompatibleRuntimes:
+        - python3.6
+        - python3.7
+        - python3.8
+      LayerName: kafka-layer
+      Content: ../src/layers/kafka-layer.zip
+
+  RedisLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      CompatibleRuntimes:
+        - python3.6
+        - python3.7
+        - python3.8
+      LayerName: redis-layer
+      Content: ../src/layers/redis-layer.zip
+
+  ConstantLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      CompatibleRuntimes:
+        - python3.6
+        - python3.7
+        - python3.8
+      LayerName: fraud-detection-constant-layer
+      Content: ../src/constants/constant-layer.zip
+
+#  SagemakerLayer:
+#    Type: AWS::Lambda::LayerVersion
+#    Properties:
+#      CompatibleRuntimes:
+#        - python3.6
+#        - python3.7
+#        - python3.8
+#      LayerName: sagemaker-layer
+#      Content: ../src/layers/aws-sagemaker-layer.zip
 
   ApprovalRequest:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: !Sub ${ProjectName}-approval-request
       Runtime: python3.8
-      Code:
-        S3Bucket: !Ref SrcBucket
-        S3Key: src/approvalRequest/code.zip
+      Code: ../src/approvalRequest/code.zip
       Role: !Ref BasicLambdaRoleArn
       Handler: handler.handler
       VpcConfig:
@@ -48,15 +85,17 @@ Resources:
         SubnetIds:
           - !Ref PublicSubnetA
           - !Ref PublicSubnetB
+      Layers:
+        - !Ref KafkaLayer
+        - !Ref RedisLayer
+        - !Ref ConstantLayer
 
   BatchWriter:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: !Sub ${ProjectName}-batch-writer
       Runtime: python3.8
-      Code:
-        S3Bucket: !Ref SrcBucket
-        S3Key: src/batchWriter/code.zip
+      Code: ../src/batchWriter/code.zip
       Role: !Ref BasicLambdaRoleArn
       Handler: handler.handler
       VpcConfig:
@@ -65,15 +104,16 @@ Resources:
         SubnetIds:
           - !Ref PrivateSubnetA
           - !Ref PrivateSubnetB
+      Layers:
+        - !Ref KafkaLayer
+        - !Ref ConstantLayer
 
   CheckResult:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: !Sub ${ProjectName}-check-result
       Runtime: python3.8
-      Code:
-        S3Bucket: !Ref SrcBucket
-        S3Key: src/checkResult/code.zip
+      Code: ../src/checkResult/code.zip
       Role: !Ref BasicLambdaRoleArn
       Handler: handler.handler
       VpcConfig:
@@ -82,15 +122,16 @@ Resources:
         SubnetIds:
           - !Ref PublicSubnetA
           - !Ref PublicSubnetB
+      Layers:
+        - !Ref RedisLayer
+        - !Ref ConstantLayer
 
   Classifier:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: !Sub ${ProjectName}-classifier
       Runtime: python3.8
-      Code:
-        S3Bucket: !Ref SrcBucket
-        S3Key: src/classifier/code.zip
+      Code: ../src/classifier/code.zip
       Role: !Ref BasicLambdaRoleArn
       Handler: handler.handler
       VpcConfig:
@@ -99,15 +140,17 @@ Resources:
         SubnetIds:
           - !Ref PrivateSubnetA
           - !Ref PrivateSubnetB
+      Layers:
+        - !Ref KafkaLayer
+        - !Ref ConstantLayer
+        - !Ref RedisLayer
 
   VerifyTransaction:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: !Sub ${ProjectName}-verify-transaction
       Runtime: python3.8
-      Code:
-        S3Bucket: !Ref SrcBucket
-        S3Key: src/verifyTransaction/code.zip
+      Code: ../src/verifyTransaction/code.zip
       Role: !Ref BasicLambdaRoleArn
       Handler: handler.handler
       VpcConfig:
@@ -116,7 +159,21 @@ Resources:
         SubnetIds:
           - !Ref PublicSubnetA
           - !Ref PublicSubnetB
+      Layers:
+        - !Ref RedisLayer
+        - !Ref ConstantLayer
 
+#  SageMakerDeployment:
+#    Type: AWS::Lambda::Function
+#    Properties:
+#      FunctionName: !Sub ${ProjectName}-sagemaker-deployment
+#      Runtime: python3.8
+#      Code: ../src/sagemaker/code.zip
+#      Role: !Ref BasicLambdaRoleArn
+#      Handler: handler.handler
+#      Layers:
+#        - !Ref ConstantLayer
+#        - !Ref SagemakerLayer
 
   # API gateway definition
   ApiGateway:

@@ -50,6 +50,11 @@ Resources:
           FromPort: '22'
           IpProtocol: tcp
           ToPort: '22'
+        - CidrIp: 0.0.0.0/0
+          FromPort: '6379'
+          IpProtocol: tcp
+          ToPort: '6379'
+
       # assign to the vpc
       VpcId: !Ref VPC
       Tags:
@@ -255,7 +260,7 @@ Resources:
     Properties:
       SubnetId: !Ref PrivateSubnetB
       RouteTableId: !Ref PrivateRouteTable
-  # If you like, you can test your VPC by running EC2 instances within it.
+  # If you like, you can input your VPC by running EC2 instances within it.
   # Instances with public IP addresses attached to the public subnets will be accessible
   # from the public internet.  Instances in the private subnets will be unreachable
   # from the public internet, but will be able to make outbound calls.
@@ -295,3 +300,7 @@ Outputs:
   SecurtityGroup1:
     Description: The security **group ID** to use for public web servers
     Value: !GetAtt SecurityGroup1.GroupId
+
+  PrivateRouteTableID:
+    Description: private route table ID
+    Value: !Ref PrivateRouteTable

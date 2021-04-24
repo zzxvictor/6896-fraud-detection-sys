@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: fraud-detection-sys
+
+  SrcBucketName:
+    Type: String
+    Default: eecs6895-fraud-detection-repo
+    Description: Bucket that hosts all src files
+
+Resources:
+  VpcStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      # hardcode s3 bucket
+      TemplateURL: vpc.yaml
+
+  IamRoleStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: iam_role.yaml
+      Parameters:
+        ProjectName: !Ref ProjectName
+
+  ApiLambdaStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: api_lambda.yaml
+      Parameters:
+        ProjectName: !Ref ProjectName
+        BasicLambdaRoleArn: !GetAtt IamRoleStack.Outputs.LambdaRoleArn
+        SecurityGroupId: !GetAtt VpcStack.Outputs.SecurtityGroup1
+        PrivateSubnetA: !GetAtt VpcStack.Outputs.PrivateSubnetA
+        PrivateSubnetB: !GetAtt VpcStack.Outputs.PrivateSubnetB
+        PublicSubnetA: !GetAtt VpcStack.Outputs.PublicSubnetA
+        PublicSubnetB: !GetAtt VpcStack.Outputs.PublicSubnetB
+
+  DynamoRedisStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: dynamodb_redis.yaml
+      Parameters:
+        ProjectName: !Ref ProjectName
+        VpcID: !GetAtt VpcStack.Outputs.VPCID
+        RouteTableID: !GetAtt VpcStack.Outputs.PrivateRouteTableID
+        SecurityGroupID: !GetAtt VpcStack.Outputs.SecurtityGroup1
+        PrivateSubnetA: !GetAtt VpcStack.Outputs.PrivateSubnetA
+        PrivateSubnetB: !GetAtt VpcStack.Outputs.PrivateSubnetB

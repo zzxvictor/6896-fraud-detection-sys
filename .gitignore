@@ -10,11 +10,10 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
-lib/
+
 lib64/
 parts/
 sdist/
@@ -37,7 +36,7 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
+# Unit input / coverage reports
 htmlcov/
 .tox/
 .nox/
@@ -132,3 +131,17 @@ dmypy.json
 useful_commands.md
 .idea/
 /debug.yaml
+/root-output.yaml
+
+
+# MAC related
+.DS_Store
+
+
+# cred files
+creds/
+constant-layer.zip
+code.zip
+
+# data
+data/
